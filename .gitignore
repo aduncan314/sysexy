@@ -1,0 +1,7 @@
+venv
+__pychache
+*.pyc
+
+.idea
+
+temp_data
