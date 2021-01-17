@@ -14,3 +14,5 @@ https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-stat
   
 - [DSI PEK Manual]( 
 https://www.davesmithinstruments.com/downloads/poly_evolver_key/doc/Poly_Evo_Key_Manual_1.4.pdf)
+  
+- [Possible Ideas](https://forums.cockos.com/showthread.php?t=142527)

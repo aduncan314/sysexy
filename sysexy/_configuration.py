@@ -14,6 +14,7 @@ class SingleConfig(object):
         self.path = Path(conf['sysex_path']).expanduser()
         self.port = ':'.join([conf[n] for n in self.NAME_LIST])
 
+        print(mido.get_input_names())
         if not self.is_valid:
             raise RuntimeError(f"{self} is not a valid configuration")
 
@@ -39,7 +40,9 @@ class SysExyConfiguration(object):
         except FileNotFoundError:
             raise RuntimeError("No configuration file found.")
 
-        self.configs = {name: SingleConfig(name, conf) for name, conf in self._raw_config.items()}
+        self.configs = {name: SingleConfig(name, conf)
+                        for name, conf in self._raw_config.items()
+                        if name != 'DEFAULT'}
 
     @property
     def options(self):

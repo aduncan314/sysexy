@@ -1,42 +1,41 @@
-import json
 import time
-from pathlib import Path
 from typing import Dict
 
 import mido
 
-from program import Program
 from _configuration import SysExyConfiguration
+from program import Program
+
+MOPHO_REQUEST_MSG = mido.Message('sysex', data=[0x01, 0x27, 0x05, 0x02, 0x00])
 
 
 def main():
-    config = SysExyConfiguration('.')
-    mopho_config = config.get('Mopho Keyboard')
-    port = mopho_config.port
-    messages = _listen(mido.open_input(port))
+    config = SysExyConfiguration('..')
+    mopho_config = config.get('MophoKeyboard')
     p = Program('test', mopho_config)
+
+    messages = _listen(mido.open_input(mopho_config.port), mopho_config)
 
     for m in messages.values():
         if m.get('sysex'):
             p.set_program_state(m['sysex'])
 
-    _save_sysex(messages, mopho_config.path)
+    p.save()
 
 
-def _listen(in_port) -> Dict[float, dict]:
+def _listen(in_port, config) -> Dict[float, dict]:
     start = time.time()
     all_messages = dict()
     while time.time() - start < 10:
-        print(time.time())
+        if len(all_messages) == 0:
+            out_port = mido.open_output(config.port)
+            out_port.send(MOPHO_REQUEST_MSG)
+
         msg = in_port.receive()
+        print(time.time())
         all_messages[time.time()] = {msg.type: msg.hex()}
 
     return all_messages
-
-
-def _save_sysex(messages: dict, path: Path):
-    with path.open('w') as f:
-        json.dump(messages, f, indent=2, sort_keys=True)
 
 
 if __name__ == '__main__':
